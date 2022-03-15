@@ -9,6 +9,10 @@
 #define DATE_Y 63
 U8G2_SSD1327_EA_W128128_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 22, /* data=*/ 21, /* reset=*/ U8X8_PIN_NONE);
 
+const int buttonPin = 4;     // the number of the pushbutton pin
+const int ledPin =  2;      // the number of the LED pin
+
+int buttonState = 0;    
 void u8g2_prepare(void) {
   u8g2.setFont(u8g2_font_bubble_tn);
   u8g2.setFontRefHeightExtendedText();
@@ -29,6 +33,18 @@ void u8g2_home_frame(uint8_t a) {
   u8g2.setFont(u8g2_font_squeezed_b7_tr);
   u8g2.setFontDirection(0);
   u8g2.drawStr(67, 75, "16%");
+  u8g2.sendBuffer();
+}
+
+//u8g2_font_crox5hb_tf
+void u8g2_stopwatch_frame(uint8_t a) {
+  u8g2.setFont(u8g2_font_Born2bSportySlab_tf);
+  u8g2.drawStr(27, 5, "STOPWATCH");
+  u8g2.setFont(u8g2_font_bubble_tn);
+  u8g2.drawStr(16, MINUTES_Y, "07");
+  u8g2.drawStr(MINUTES_X+16, MINUTES_Y, ":");
+  u8g2.drawStr(MINUTES_X+27, MINUTES_Y, "53");
+  u8g2.drawStr(DATE_X+2, DATE_Y, "54");
   u8g2.sendBuffer();
 }
 
@@ -194,9 +210,9 @@ uint8_t draw_state = 0;
 
 void draw(void) {
   u8g2_prepare();
-  switch(draw_state >> 3) {
+  switch(draw_state) {
     case 0: u8g2_home_frame(draw_state&7); break;
-    case 1: u8g2_disc_circle(draw_state&7); break;
+    case 1: u8g2_stopwatch_frame(draw_state&7); break;
     case 2: u8g2_r_frame(draw_state&7); break;
     case 3: u8g2_string(draw_state&7); break;
     case 4: u8g2_line(draw_state&7); break;
@@ -213,6 +229,10 @@ void draw(void) {
 
 void setup(void) {
   u8g2.begin();
+    // initialize the LED pin as an output:
+  pinMode(ledPin, OUTPUT);
+  // initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);
 }
 
 void loop(void) {
@@ -220,9 +240,8 @@ void loop(void) {
   u8g2.clearBuffer();
   draw();
   u8g2.sendBuffer();
-  
   // increase the state
   // deley between each page
-  delay(100);
-
+  delay(3000);
+draw_state = 1;
 }
