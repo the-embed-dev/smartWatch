@@ -241,7 +241,7 @@ void loop(void) {
   draw();
   u8g2.sendBuffer();
   // increase the state
-  // deley between each page
+  // deley of 3 seconds between each page
   delay(3000);
 draw_state = 1;
 }
